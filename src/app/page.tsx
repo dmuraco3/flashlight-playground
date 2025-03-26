@@ -1,7 +1,6 @@
-import Image from "next/image";
 import Input from "./components/Input";
 import Link from "next/link";
-import { ArrowUpRight, ArrowUpRightFromSquare } from "lucide-react";
+import { ArrowUpRightFromSquare } from "lucide-react";
 
 export default function Home() {
   return <main className="container mx-auto py-12">

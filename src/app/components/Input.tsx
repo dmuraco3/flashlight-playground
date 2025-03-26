@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Flashlight from "flashlightjs";
 import { VSCode, VSCodeDark, AtomDark } from "flashlightjs/styles"
 import { JavaScript, HTML, Python } from "flashlightjs/languages";
-import { useDeferredValue, useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Language } from "flashlightjs";
 
@@ -13,7 +13,7 @@ const languages = [JavaScript, HTML, Python];
 const styles = [VSCode, VSCodeDark, AtomDark];
 
 export default function Input() {
-    const flashlight = new Flashlight(languages);
+    const flashlight = useMemo(() => new Flashlight(languages), []);
     const [style, setStyle] = useState(VSCode);
     const [language, setLanguage] = useState<new () => Language>(() => JavaScript);
     const [code, setCode] = useState("function greet() {\n\tconsole.log('Hello, World!');\n}");
@@ -32,7 +32,7 @@ export default function Input() {
         const elapsed = performance.now() - start;
         setHighlightedCode(res)
         setElapsedTime(elapsed);
-    }, [deferredCode, language, style]);
+    }, [flashlight, deferredCode, language, style]);
 
     return <div className="mt-12 flex flex-col gap-y-8">
 
@@ -76,8 +76,8 @@ export default function Input() {
                 onKeyDown={e => {
                     if (e.key === "Tab") {
                         e.preventDefault();
-                        var start = e.currentTarget.selectionStart;
-                        var end = e.currentTarget.selectionEnd;
+                        const start = e.currentTarget.selectionStart;
+                        const end = e.currentTarget.selectionEnd;
 
                         // set textarea value to: text before caret + tab + text after caret
                         e.currentTarget.value = e.currentTarget.value.substring(0, start) +
@@ -90,8 +90,12 @@ export default function Input() {
                     }
                 }}
             />
-
-            <div dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+            <div>
+                <div dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+                <div>
+                    <span>Elapsed time: {elapsedTime}ms</span>
+                </div>
+            </div>
         </div>
     </div>
 }
